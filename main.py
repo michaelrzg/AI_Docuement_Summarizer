@@ -62,7 +62,8 @@ def abstractive(text):
 
     @type text: string
     @param text: input text to be summarized
-    
+    @rtype: string
+    @returns: string summary of input text
     """
     pass
 
