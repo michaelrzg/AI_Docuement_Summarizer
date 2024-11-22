@@ -75,7 +75,7 @@ def abstractive(text):
     encoding = bart.generate(inputs, max_length=150, min_length=50, length_penalty=2.0, num_beams=4, early_stopping=True)
 
     summary = tokenizer.decode(encoding[0], skip_special_tokens=True)
-    return summary
+    return "\n"+ summary
 
 # MAIN
 
