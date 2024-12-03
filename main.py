@@ -102,10 +102,10 @@ def abstractive_BERT_BART(text):
     summary = tokenizer.decode(encoding[0], skip_special_tokens=True)
     return summary
 
-def abstractive_BERT_T5(text):
+def abstractive_T5(text):
     """
-    This function utilizies BERT and T5 to return a summary of the input text with n_sentences via Abstractive Summarization.
-    BERT used for encoding and T5 used for decoding.
+    This function utilizies T5 to return a summary of the input text with n_sentences via Abstractive Summarization.
+    T5 used for encoding and decoding.
 
     @type text: string
     @param text: input text to be summarized
@@ -113,7 +113,7 @@ def abstractive_BERT_T5(text):
     @returns: string summary of input text
     """
     # BERT tokenizer and encoder
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    tokenizer = T5Tokenizer.from_pretrained('t5-small',legacy=False)
     # BART decoder
     T5 = T5ForConditionalGeneration.from_pretrained("t5-small")
     inputs = tokenizer.encode("summarize: " + text, return_tensors="pt", max_length=1024, truncation=True)
@@ -121,6 +121,9 @@ def abstractive_BERT_T5(text):
     summary = tokenizer.decode(encoding[0], skip_special_tokens=True)
     return summary
 
+def clean_summary(summary):
+    # Remove [unusedX] tokens
+    return summary.replace("[unused", "").replace("]", "")
 # TODO: Bert + t5
 # TODO: Finetune bert , bart
 # TODO: Bertscore for comparison, ROGUE metric comparisons
@@ -137,4 +140,7 @@ print("\n\nAbstractive Summary with BART: ")
 print(abstractive_BART(input) + "\n")
 # Abstractive Summary with BERT Encodings and BART Decoding
 print("\n\nAbstractive Summary with BERT + BART: ")
-print(abstractive_BERT_BART(input) + "\n")
+print(clean_summary(abstractive_BERT_BART(input) + "\n"))
+
+print("\n\nAbstractive Summary with BERT + T5: ")
+print(abstractive_T5(input) + "\n")
