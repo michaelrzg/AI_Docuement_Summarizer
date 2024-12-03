@@ -1,19 +1,35 @@
-from transformers import TFBertForSequenceClassification, BertTokenizer
-from transformers import BertTokenizer
+from transformers import TFBartForConditionalGeneration, BartTokenizer
 import tensorflow as tf
-# Load the model and tokenizer
-model = TFBertForSequenceClassification.from_pretrained("trained")
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
-# Example of testing, you will need to modify that part to accomodate the full test
-test_sentence = "This is a really good movie. I loved it and will watch again"
 
-# don't forget to tokenize your test inputs
-predict_input = tokenizer.encode(test_sentence, truncation=True, padding=True, return_tensors="tf")
+# Load the trained BART model and tokenizer
+model = TFBartForConditionalGeneration.from_pretrained("bart_cnn_dailymail_finetuned")
+tokenizer = BartTokenizer.from_pretrained("facebook/bart-large-cnn")
 
-tf_output = model.predict(predict_input)[0]
-tf_prediction = tf.nn.softmax(tf_output, axis=1)
+# Example test input (e.g., an article to summarize)
+test_input = (
+    "The global economy has seen significant changes in recent years, "
+    "with advancements in technology driving growth in many industries. "
+    "However, challenges such as climate change and geopolitical tensions remain pressing concerns."
+)
 
-labels = ['Negative','Positive'] #(0:negative, 1:positive)
-label = tf.argmax(tf_prediction, axis=1)
-label = label.numpy()
-print(labels[label[0]])
+# Tokenize the input for the BART model
+input_ids = tokenizer.encode(
+    test_input, 
+    return_tensors="tf", 
+    max_length=1024, 
+    truncation=True
+)
+
+# Generate the summary using the model
+summary_ids = model.generate(
+    input_ids, 
+    max_length=128, 
+    num_beams=4, 
+    length_penalty=2.0, 
+    early_stopping=True
+)
+
+# Decode and print the summary
+summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+print("Summary:")
+print(summary)
