@@ -54,25 +54,31 @@ def map_example_to_dict(input_ids, attention_masks, labels):
 
 
 # Encode examples from the dataset
+# Encode examples from the dataset
 def encode_examples(dataset, limit=-1):
     input_ids_list = []
     attention_mask_list = []
     label_list = []
-
+    count = 0
+    # Use the select() method to slice the dataset
     if limit > 0:
-        dataset = dataset[:limit] 
+        dataset = dataset.select(range(limit))
 
     for example in dataset:
         article = example["article"]
-        summary = example["highlights"]  
+        summary = example["highlights"]
         input_ids, attention_mask, labels = convert_example_to_feature(article, summary)
         input_ids_list.append(input_ids[0])
         attention_mask_list.append(attention_mask[0])
         label_list.append(labels[0])
+        count+=1
+        if(((count/limit)*100)%20 == 0):
+            print((count/limit)*100), "%"
 
     return tf.data.Dataset.from_tensor_slices(
         (input_ids_list, attention_mask_list, label_list)
     ).map(map_example_to_dict)
+
 
 
 
@@ -85,10 +91,10 @@ test_dataset = dataset["validation"]
 print("Training set size: ", len(train_dataset), "Testing set size: ", len(test_dataset))
 # Step 2: Preprocess the datasets
 print("Encoding Training Dataset..")
-ds_train_encoded = encode_examples(train_dataset[:N_TRAINING], limit=20000).shuffle(10000).batch(batch_size)
+ds_train_encoded = encode_examples(train_dataset, limit=20000).shuffle(10000).batch(batch_size)
 
 print("Encoding Testing Dataset.. ")
-ds_test_encoded = encode_examples(test_dataset[:N_TESTING], limit=2000).batch(batch_size)
+ds_test_encoded = encode_examples(test_dataset, limit=2000).batch(batch_size)
 
 # Step 3: Initialize BART model
 print("Initializing BART model..")
