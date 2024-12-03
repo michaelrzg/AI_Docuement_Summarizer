@@ -60,19 +60,20 @@ def encode_examples(dataset, limit=-1):
     label_list = []
 
     if limit > 0:
-        dataset = dataset.select(range(limit))
+        dataset = dataset[:limit] 
 
     for example in dataset:
         article = example["article"]
-        summary = example["highlights"]  # Use "highlights" as the target
+        summary = example["highlights"]  
         input_ids, attention_mask, labels = convert_example_to_feature(article, summary)
-        input_ids_list.append(input_ids[0])  # Extract tensor from batch dimension
+        input_ids_list.append(input_ids[0])
         attention_mask_list.append(attention_mask[0])
         label_list.append(labels[0])
 
     return tf.data.Dataset.from_tensor_slices(
         (input_ids_list, attention_mask_list, label_list)
     ).map(map_example_to_dict)
+
 
 
 print("Loading dataset...")
