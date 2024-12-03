@@ -15,6 +15,9 @@ nlp = spacy.load('en_core_web_sm')
 from transformers import BertTokenizer, BertModel
 # import bart
 from transformers import BartForConditionalGeneration, BartTokenizer
+# import t5
+from transformers import T5ForConditionalGeneration, T5Tokenizer
+
 
 def extractive(text, n_sentences):
     """
@@ -96,6 +99,25 @@ def abstractive_BERT_BART(text):
     bart = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")
     inputs = tokenizer.encode("summarize: " + text, return_tensors="pt", max_length=1024, truncation=True)
     encoding = bart.generate(inputs, max_length=150, min_length=50, length_penalty=2.0, num_beams=4, early_stopping=True)
+    summary = tokenizer.decode(encoding[0], skip_special_tokens=True)
+    return summary
+
+def abstractive_BERT_T5(text):
+    """
+    This function utilizies BERT and T5 to return a summary of the input text with n_sentences via Abstractive Summarization.
+    BERT used for encoding and T5 used for decoding.
+
+    @type text: string
+    @param text: input text to be summarized
+    @rtype: string
+    @returns: string summary of input text
+    """
+    # BERT tokenizer and encoder
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+    # BART decoder
+    T5 = T5ForConditionalGeneration.from_pretrained("t5-small")
+    inputs = tokenizer.encode("summarize: " + text, return_tensors="pt", max_length=1024, truncation=True)
+    encoding = T5.generate(inputs, max_length=150, min_length=50, length_penalty=2.0, num_beams=4, early_stopping=True)
     summary = tokenizer.decode(encoding[0], skip_special_tokens=True)
     return summary
 
