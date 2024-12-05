@@ -279,7 +279,23 @@ def generate_statistics(dataset,limit):
         
         count+=1
         print("Progress: " , (count/limit)*100 , "%")
-    return [mean([x[1] for x in extractive_precision])]
+    return f"""
+    ROGUE1 Precision: 
+Extractive : {mean([x[0] for x in extractive_precision])}
+BART : {mean([x[0] for x in BART_precision])}
+BERT_BART : {mean([x[0] for x in BERT_BART_precision])}
+T5 : {mean([x[0] for x in T5_precision])}
+
+Extractive Recall: {mean([x[1] for x in extractive_precision])}
+BART Recall: {mean([x[1] for x in BART_precision])}
+BERT_BART Recall: {mean([x[1] for x in BERT_BART_precision])}
+T5 Recall: {mean([x[1] for x in T5_precision])}
+
+Extractive fScore:  {mean([x[2] for x in extractive_precision])}
+BART fScore:  {mean([x[2] for x in BART_precision])}
+BERT_BART fScore:  {mean([x[2] for x in BERT_BART_precision])}
+T5 fScore:  {mean([x[2] for x in T5_precision])}
+"""
 
 
 #TODO: 
