@@ -144,9 +144,6 @@ def generate_summaries(input):
     for key in extractive_scores:
         print(f'{key}: {extractive_scores[key]}')
 
-    #generate BERT Scores
-
-    print(BERTScore(input,extractive_summary))
 
 
     # Abstractive Summary with BART
@@ -160,9 +157,6 @@ def generate_summaries(input):
     for key in BART_scores:
         print(f'{key}: {BART_scores[key]}')
 
-    #generate BERT Scores
-
-    print(BERTScore(input,BART_summary))
 
 
     # Abstractive Summary with BERT Encodings and BART Decoding
@@ -176,9 +170,6 @@ def generate_summaries(input):
     for key in BERT_BART_scores:
         print(f'{key}: {BERT_BART_scores[key]}')
 
-    #generate BERT Scores
-
-    BERTScore(input,BERT_BART_summary)
 
     print("\n\nAbstractive Summary with BERT + T5: ")
     T5_summary = abstractive_T5(input)
@@ -190,9 +181,6 @@ def generate_summaries(input):
     for key in T5_scores:
         print(f'{key}: {T5_scores[key]}')
     
-    #generate BERT Scores
-
-    BERTScore(input,T5_summary)
 
 def generate_ROGUE_statistics(dataset,limit):
 
