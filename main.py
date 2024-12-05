@@ -194,7 +194,7 @@ def generate_summaries(input):
 
     BERTScore(input,T5_summary)
 
-def generate_statistics(dataset,limit):
+def generate_ROGUE_statistics(dataset,limit):
 
     extractive_precision = []
     extractive_recall = []
@@ -228,9 +228,6 @@ def generate_statistics(dataset,limit):
         # get fmeasure for rogue1, rogue2, and rogueL
         extractive_fmeasure.append((extractive_scores['rouge1'].fmeasure,extractive_scores['rouge2'].fmeasure,extractive_scores['rougeL'].fmeasure))
 
-        #generate BERT Scores
-        extractive_bert_score = BERTScore(input["article"],extractive_summary)
-
         # Abstractive Summary with BART
         BART_summary = abstractive_BART(input["article"])
 
@@ -243,10 +240,6 @@ def generate_statistics(dataset,limit):
         BART_recall.append((BART_scores['rouge1'].recall,BART_scores['rouge2'].recall,BART_scores['rougeL'].recall))
         # get fmeasure for rogue1, rogue2, and rogueL
         BART_fmeasure.append((BART_scores['rouge1'].fmeasure,BART_scores['rouge2'].fmeasure,BART_scores['rougeL'].fmeasure))
-        #generate BERT Scores
-
-        bert_bert_score = BERTScore(input["article"],BART_summary)
-
 
         # Abstractive Summary with BERT Encodings and BART Decoding
         BERT_BART_summary = clean_summary(abstractive_BERT_BART(input["article"]))
@@ -260,9 +253,6 @@ def generate_statistics(dataset,limit):
         BERT_BART_recall.append((BERT_BART_scores['rouge1'].recall,BERT_BART_scores['rouge2'].recall,BERT_BART_scores['rougeL'].recall))
         # get fmeasure for rogue1, rogue2, and rogueL
         BERT_BART_fmeasure.append((BERT_BART_scores['rouge1'].fmeasure,BERT_BART_scores['rouge2'].fmeasure,BERT_BART_scores['rougeL'].fmeasure))
-        #generate BERT Scores
-
-        bert_bart_bert_score = BERTScore(input["article"],BERT_BART_summary)
 
         T5_summary = abstractive_T5(input["article"])
 
@@ -274,8 +264,6 @@ def generate_statistics(dataset,limit):
         T5_recall.append((T5_scores['rouge1'].recall,T5_scores['rouge2'].recall,T5_scores['rougeL'].recall))
         # get fmeasure for rogue1, rogue2, and rogueL
         T5_fmeasure.append((T5_scores['rouge1'].fmeasure,T5_scores['rouge2'].fmeasure,T5_scores['rougeL'].fmeasure))
-        #generate BERT Scores
-        t5_bert_score = BERTScore(input["article"],T5_summary)
         
         count+=1
         print("Progress: " , (count/limit)*100 , "%")
@@ -337,7 +325,7 @@ T5 :  {mean([x[2] for x in T5_fmeasure])}
 
 
 #TODO: 
-def BERTScore(summary,context):
+def generate_BERT_Scores(dataset):
     pass
 
 
@@ -350,4 +338,5 @@ scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=Tr
 input = "KYIV, Ukraine — Russia fired an experimental intermediate-range ballistic missile at Ukraine overnight, Russian President Vladimir Putin said in a TV speech Thursday, warning that the Kremlin could use it against military installations of countries that have allowed Ukraine to use their missiles to strike inside Russia. Putin said the new missile, called \"Oreshnik,\" Russian for \"hazel,\" used a nonnuclear warhead. Ukraine's air force said a ballistic missile hit the central Ukrainian city of Dnipro, saying it was launched from the Astrakhan region in southeastern Russia, more than 770 miles away. Ukrainian officials said it and other rockets damaged an industrial facility, a rehabilitation center for people with disabilities and residential buildings. Three people were injured, according to regional authorities. \"This is an obvious and serious increase in the scale and brutality of this war,\" Ukrainian President Volodymyr Zelenskyy wrote on his Telegram messaging app. The attack came during a week of intense fighting in the nearly three years of war since Russia invaded Ukraine, and it followed U.S. authorization earlier this week for Ukraine to use its sophisticated weapons to strike targets deep inside Russia. Putin said Ukraine had carried out attacks in Russia this week using long-range U.S.-made Army Tactical Missile System (ATACMS) and British-French Storm Shadow missiles. He said Ukraine could not have carried out these attacks without NATO involvement. \"Our test use of Oreshnik in real conflict conditions is a response to the aggressive actions by NATO countries towards Russia,\" Putin said. He also warned: \"We believe that we have the right to use our weapons against military facilities of the countries that allow to use their weapons against our facilities.\""
 
 #generate_summaries(input)
-print(generate_statistics(dataset["test"], 3))
+print(generate_ROGUE_statistics(dataset["test"], 100))
+#print(generate_BERT_Scores(dataset["test"]))
