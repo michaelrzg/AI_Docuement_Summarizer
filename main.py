@@ -80,7 +80,7 @@ def abstractive_BART(text):
     @returns: string summary of input text
     """
     # import our trained bartbart
-    bart = BartForConditionalGeneration.from_pretrained("bart_cnn_dailymail_finetuned")
+    bart = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")
     tokenizer = BartTokenizer.from_pretrained("facebook/bart-large-cnn",clean_up_tokenization_spaces=True)
 
     inputs = tokenizer.encode("summarize: " + text, return_tensors="pt", max_length=1024, truncation=True)
@@ -103,7 +103,7 @@ def abstractive_BERT_BART(text):
     # BERT tokenizer and encoder
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     # our trained BART decoder
-    bart = BartForConditionalGeneration.from_pretrained("bart_cnn_dailymail_finetuned")
+    bart = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")
     inputs = tokenizer.encode("summarize: " + text, return_tensors="pt", max_length=1024, truncation=True)
     encoding = bart.generate(inputs, max_length=150, min_length=50, length_penalty=2.0, num_beams=4, early_stopping=True)
     summary = tokenizer.decode(encoding[0], skip_special_tokens=True)
