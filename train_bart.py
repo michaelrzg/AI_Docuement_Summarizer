@@ -1,7 +1,7 @@
 from transformers import BartTokenizer, TFBartForConditionalGeneration
 import tensorflow as tf
 from datasets import load_dataset
-
+from rouge_score import rouge_scorer
 # define how many samples we want to train and test on
 N_TRAINING = 10000
 N_TESTING = 1000
