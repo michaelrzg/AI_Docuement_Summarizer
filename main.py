@@ -129,10 +129,24 @@ def abstractive_T5(text):
     return summary
 
 def clean_summary(summary):
+    """
+    This function cleans the summary of unused tokens (from bert/bart passing)
+
+    @type summary: string
+    @param summary: summary to be cleaned
+    @rtype: string
+    @returns: cleaned summary
+    """
     # Remove [unusedX] tokens
     return summary.replace("[unused", "").replace("]", "")
 
 def generate_summaries(input):
+    """
+    This function generates and prints the extractive, finetuned BART, BERT-BART, and T5 Summaries for a given input article
+
+    @type input: string
+    @param input: input text to be summarized
+    """
     print("\n\nExtractive Summary: \n")
     
     #generate extractive summary
@@ -184,7 +198,17 @@ def generate_summaries(input):
     
 
 def generate_statistics(dataset,limit):
+    """
+    This function generates the performance metrics statistics for our
+    extractive, finetuned bart, bert-bart, and T5 models summarizaton based on a dataset
 
+    @type dataset: dataset
+    @param dataset: dataset of summaries
+    @type limit: integer
+    @param limit: how many samples from the dataset to include
+    @rtype: string
+    @returns: string containing statistics
+    """
     extractive_precision = []
     extractive_recall = []
     extractive_fmeasure=[]
