@@ -280,21 +280,59 @@ def generate_statistics(dataset,limit):
         count+=1
         print("Progress: " , (count/limit)*100 , "%")
     return f"""
-    ROGUE1 Precision: 
+ROGUE1 Precision: 
 Extractive : {mean([x[0] for x in extractive_precision])}
 BART : {mean([x[0] for x in BART_precision])}
 BERT_BART : {mean([x[0] for x in BERT_BART_precision])}
 T5 : {mean([x[0] for x in T5_precision])}
 
-Extractive Recall: {mean([x[1] for x in extractive_precision])}
-BART Recall: {mean([x[1] for x in BART_precision])}
-BERT_BART Recall: {mean([x[1] for x in BERT_BART_precision])}
-T5 Recall: {mean([x[1] for x in T5_precision])}
+ROGUE2 Precision: 
+Extractive : {mean([x[1] for x in extractive_precision])}
+BART : {mean([x[1] for x in BART_precision])}
+BERT_BART : {mean([x[1] for x in BERT_BART_precision])}
+T5 : {mean([x[1] for x in T5_precision])}
 
-Extractive fScore:  {mean([x[2] for x in extractive_precision])}
-BART fScore:  {mean([x[2] for x in BART_precision])}
-BERT_BART fScore:  {mean([x[2] for x in BERT_BART_precision])}
-T5 fScore:  {mean([x[2] for x in T5_precision])}
+ROGUEL Precision: 
+Extractive :  {mean([x[2] for x in extractive_precision])}
+BART :  {mean([x[2] for x in BART_precision])}
+BERT_BART :  {mean([x[2] for x in BERT_BART_precision])}
+T5 :  {mean([x[2] for x in T5_precision])}
+
+ROGUE1 Recall: 
+Extractive : {mean([x[0] for x in extractive_recall])}
+BART : {mean([x[0] for x in BART_recall])}
+BERT_BART : {mean([x[0] for x in BERT_BART_recall])}
+T5 : {mean([x[0] for x in T5_recall])}
+
+ROGUE2 Recall: 
+Extractive : {mean([x[1] for x in extractive_recall])}
+BART : {mean([x[1] for x in BART_recall])}
+BERT_BART : {mean([x[1] for x in BERT_BART_recall])}
+T5 : {mean([x[1] for x in T5_recall])}
+
+ROGUEL Recall: 
+Extractive :  {mean([x[2] for x in extractive_recall])}
+BART :  {mean([x[2] for x in BART_recall])}
+BERT_BART :  {mean([x[2] for x in BERT_BART_recall])}
+T5 :  {mean([x[2] for x in T5_recall])}
+
+ROGUE1 fMeasure: 
+Extractive : {mean([x[0] for x in extractive_fmeasure])}
+BART : {mean([x[0] for x in BART_fmeasure])}
+BERT_BART : {mean([x[0] for x in BERT_BART_fmeasure])}
+T5 : {mean([x[0] for x in T5_fmeasure])}
+
+ROGUE2 fMeasure: 
+Extractive : {mean([x[1] for x in extractive_fmeasure])}
+BART : {mean([x[1] for x in BART_fmeasure])}
+BERT_BART : {mean([x[1] for x in BERT_BART_fmeasure])}
+T5 : {mean([x[1] for x in T5_fmeasure])}
+
+ROGUEL fMeasure: 
+Extractive :  {mean([x[2] for x in extractive_fmeasure])}
+BART :  {mean([x[2] for x in BART_fmeasure])}
+BERT_BART :  {mean([x[2] for x in BERT_BART_fmeasure])}
+T5 :  {mean([x[2] for x in T5_fmeasure])}
 """
 
 
