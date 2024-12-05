@@ -2,7 +2,7 @@
 # Michael Rizig
 
 # install in order to run:
-# pip install protobuf sentencepiece torch spacy rogue-score
+# pip install protobuf sentencepiece torch spacy rogue-score datasets   
 # python -m spacy download en
 
 #imports
@@ -12,7 +12,8 @@ from string import punctuation
 from collections import Counter
 from heapq import nlargest
 from rouge_score import rouge_scorer
-
+from datasets import load_dataset
+from statistics import mean
 # import spacy's eng corpus
 nlp = spacy.load('en_core_web_sm')
 
@@ -132,10 +133,11 @@ def clean_summary(summary):
 
 def generate_summaries(input):
     print("\n\nExtractive Summary: \n")
+    
     #generate extractive summary
     extractive_summary = extractive(input,4)
     print(extractive_summary)
-    print("Scores for this method:")
+    print("Scores for extractive summary:")
 
     # Generate ROGUE Scores
     extractive_scores = scorer.score(input, extractive_summary)
@@ -144,13 +146,15 @@ def generate_summaries(input):
 
     #generate BERT Scores
 
-    #TODO
+    print(BERTScore(input,extractive_summary))
+
 
     # Abstractive Summary with BART
     print("\n\nAbstractive Summary with BART: ")
     BART_summary = abstractive_BART(input)
     print( BART_summary+ "\n")
-
+    print("Scores for BART:")
+    
     #generate ROGUE scores
     BART_scores = scorer.score(input, BART_summary)
     for key in BART_scores:
@@ -158,12 +162,14 @@ def generate_summaries(input):
 
     #generate BERT Scores
 
-    #TODO
+    print(BERTScore(input,BART_summary))
+
 
     # Abstractive Summary with BERT Encodings and BART Decoding
     print("\n\nAbstractive Summary with BERT + BART: ")
     BERT_BART_summary = clean_summary(abstractive_BERT_BART(input))
     print(BERT_BART_summary + "\n")
+    print("Scores for BERT+BART:")
     
     #generate ROGUE scores
     BERT_BART_scores = scorer.score(input, BERT_BART_summary)
@@ -172,26 +178,122 @@ def generate_summaries(input):
 
     #generate BERT Scores
 
-    #TODO
+    BERTScore(input,BERT_BART_summary)
 
     print("\n\nAbstractive Summary with BERT + T5: ")
     T5_summary = abstractive_T5(input)
     print( T5_summary+ "\n")
+    print("Scores for T5:")
 
     #generate ROGUE scores
     T5_scores = scorer.score(input, T5_summary)
     for key in T5_scores:
         print(f'{key}: {T5_scores[key]}')
+    
+    #generate BERT Scores
 
-# TODO: Finetune bert , bart
+    BERTScore(input,T5_summary)
+
+def generate_statistics(dataset,limit):
+
+    extractive_precision = []
+    extractive_recall = []
+    extractive_fmeasure=[]
+
+    BART_precision = []
+    BART_recall = []
+    BART_fmeasure=[]
+
+    BERT_BART_precision = []
+    BERT_BART_recall = []
+    BERT_BART_fmeasure=[]
+
+    T5_precision = []
+    T5_recall = []
+    T5_fmeasure=[]
+    
+    count =0
+    dataset = dataset.select(range(limit))
+    for input in dataset:   
+        #generate extractive summary
+        extractive_summary = extractive(input["article"],4)
+
+        # Generate ROGUE Scores
+        extractive_scores = scorer.score(input["article"], extractive_summary)
+        
+        # get precision for rogue1, rogue2, and rogueL
+        extractive_precision.append((extractive_scores['rouge1'].precision,extractive_scores['rouge2'].precision,extractive_scores['rougeL'].precision))
+        # get recall for rogue1, rogue2, and rogueL
+        extractive_recall.append((extractive_scores['rouge1'].recall,extractive_scores['rouge2'].recall,extractive_scores['rougeL'].recall))
+        # get fmeasure for rogue1, rogue2, and rogueL
+        extractive_fmeasure.append((extractive_scores['rouge1'].fmeasure,extractive_scores['rouge2'].fmeasure,extractive_scores['rougeL'].fmeasure))
+
+        #generate BERT Scores
+        extractive_bert_score = BERTScore(input["article"],extractive_summary)
+
+        # Abstractive Summary with BART
+        BART_summary = abstractive_BART(input["article"])
+
+        #generate ROGUE scores
+        BART_scores = scorer.score(input["article"], BART_summary)
+
+         # get precision for rogue1, rogue2, and rogueL
+        BART_precision.append((BART_scores['rouge1'].precision,BART_scores['rouge2'].precision,BART_scores['rougeL'].precision))
+        # get recall for rogue1, rogue2, and rogueL
+        BART_recall.append((BART_scores['rouge1'].recall,BART_scores['rouge2'].recall,BART_scores['rougeL'].recall))
+        # get fmeasure for rogue1, rogue2, and rogueL
+        BART_fmeasure.append((BART_scores['rouge1'].fmeasure,BART_scores['rouge2'].fmeasure,BART_scores['rougeL'].fmeasure))
+        #generate BERT Scores
+
+        bert_bert_score = BERTScore(input["article"],BART_summary)
+
+
+        # Abstractive Summary with BERT Encodings and BART Decoding
+        BERT_BART_summary = clean_summary(abstractive_BERT_BART(input["article"]))
+        
+        #generate ROGUE scores
+        BERT_BART_scores = scorer.score(input["article"], BERT_BART_summary)
+
+         # get precision for rogue1, rogue2, and rogueL
+        BERT_BART_precision.append((BERT_BART_scores['rouge1'].precision,BERT_BART_scores['rouge2'].precision,BERT_BART_scores['rougeL'].precision))
+        # get recall for rogue1, rogue2, and rogueL
+        BERT_BART_recall.append((BERT_BART_scores['rouge1'].recall,BERT_BART_scores['rouge2'].recall,BERT_BART_scores['rougeL'].recall))
+        # get fmeasure for rogue1, rogue2, and rogueL
+        BERT_BART_fmeasure.append((BERT_BART_scores['rouge1'].fmeasure,BERT_BART_scores['rouge2'].fmeasure,BERT_BART_scores['rougeL'].fmeasure))
+        #generate BERT Scores
+
+        bert_bart_bert_score = BERTScore(input["article"],BERT_BART_summary)
+
+        T5_summary = abstractive_T5(input["article"])
+
+        #generate ROGUE scores
+        T5_scores = scorer.score(input["article"], T5_summary)
+         # get precision for rogue1, rogue2, and rogueL
+        T5_precision.append((T5_scores['rouge1'].precision,T5_scores['rouge2'].precision,T5_scores['rougeL'].precision))
+        # get recall for rogue1, rogue2, and rogueL
+        T5_recall.append((T5_scores['rouge1'].recall,T5_scores['rouge2'].recall,T5_scores['rougeL'].recall))
+        # get fmeasure for rogue1, rogue2, and rogueL
+        T5_fmeasure.append((T5_scores['rouge1'].fmeasure,T5_scores['rouge2'].fmeasure,T5_scores['rougeL'].fmeasure))
+        #generate BERT Scores
+        t5_bert_score = BERTScore(input["article"],T5_summary)
+        
+        count+=1
+        print("Progress: " , (count/limit)*100 , "%")
+    return [mean([x[1] for x in extractive_precision])]
+
+
+#TODO: 
+def BERTScore(summary,context):
+    pass
 
 
 # MAIN
-
+dataset = load_dataset("cnn_dailymail", "3.0.0")
 #intilize scoring 
 scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
 
 # input article from npr
 input = "KYIV, Ukraine — Russia fired an experimental intermediate-range ballistic missile at Ukraine overnight, Russian President Vladimir Putin said in a TV speech Thursday, warning that the Kremlin could use it against military installations of countries that have allowed Ukraine to use their missiles to strike inside Russia. Putin said the new missile, called \"Oreshnik,\" Russian for \"hazel,\" used a nonnuclear warhead. Ukraine's air force said a ballistic missile hit the central Ukrainian city of Dnipro, saying it was launched from the Astrakhan region in southeastern Russia, more than 770 miles away. Ukrainian officials said it and other rockets damaged an industrial facility, a rehabilitation center for people with disabilities and residential buildings. Three people were injured, according to regional authorities. \"This is an obvious and serious increase in the scale and brutality of this war,\" Ukrainian President Volodymyr Zelenskyy wrote on his Telegram messaging app. The attack came during a week of intense fighting in the nearly three years of war since Russia invaded Ukraine, and it followed U.S. authorization earlier this week for Ukraine to use its sophisticated weapons to strike targets deep inside Russia. Putin said Ukraine had carried out attacks in Russia this week using long-range U.S.-made Army Tactical Missile System (ATACMS) and British-French Storm Shadow missiles. He said Ukraine could not have carried out these attacks without NATO involvement. \"Our test use of Oreshnik in real conflict conditions is a response to the aggressive actions by NATO countries towards Russia,\" Putin said. He also warned: \"We believe that we have the right to use our weapons against military facilities of the countries that allow to use their weapons against our facilities.\""
 
-generate_summaries(input)
+#generate_summaries(input)
+print(generate_statistics(dataset["test"], 3))
