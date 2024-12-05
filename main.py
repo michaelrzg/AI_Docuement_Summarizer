@@ -152,19 +152,27 @@ def generate_summaries(input):
     #generate extractive summary
     extractive_summary = extractive(input,4)
     print(extractive_summary)
+    
+    # Abstractive Summary with BART
+    print("\n\nAbstractive Summary with BART: ")
+    BART_summary = abstractive_BART(input)
+    print( BART_summary+ "\n")
+
+    # Abstractive Summary with BERT Encodings and BART Decoding
+    print("\n\nAbstractive Summary with BERT + BART: ")
+    BERT_BART_summary = clean_summary(abstractive_BERT_BART(input))
+    print(BERT_BART_summary + "\n")
+
+    print("\n\nAbstractive Summary with  T5: ")
+    T5_summary = abstractive_T5(input)
+    print( T5_summary+ "\n")
+
     print("Scores for extractive summary:")
 
     # Generate ROGUE Scores
     extractive_scores = scorer.score(input, extractive_summary)
     for key in extractive_scores:
         print(f'{key}: {extractive_scores[key]}')
-
-
-
-    # Abstractive Summary with BART
-    print("\n\nAbstractive Summary with BART: ")
-    BART_summary = abstractive_BART(input)
-    print( BART_summary+ "\n")
     print("Scores for BART:")
     
     #generate ROGUE scores
@@ -173,22 +181,12 @@ def generate_summaries(input):
         print(f'{key}: {BART_scores[key]}')
 
 
-
-    # Abstractive Summary with BERT Encodings and BART Decoding
-    print("\n\nAbstractive Summary with BERT + BART: ")
-    BERT_BART_summary = clean_summary(abstractive_BERT_BART(input))
-    print(BERT_BART_summary + "\n")
     print("Scores for BERT+BART:")
     
     #generate ROGUE scores
     BERT_BART_scores = scorer.score(input, BERT_BART_summary)
     for key in BERT_BART_scores:
         print(f'{key}: {BERT_BART_scores[key]}')
-
-
-    print("\n\nAbstractive Summary with BERT + T5: ")
-    T5_summary = abstractive_T5(input)
-    print( T5_summary+ "\n")
     print("Scores for T5:")
 
     #generate ROGUE scores
@@ -374,5 +372,5 @@ bert_scorer = BERTScorer(model_type='bert-base-uncased')
 # input article from npr
 input = "KYIV, Ukraine — Russia fired an experimental intermediate-range ballistic missile at Ukraine overnight, Russian President Vladimir Putin said in a TV speech Thursday, warning that the Kremlin could use it against military installations of countries that have allowed Ukraine to use their missiles to strike inside Russia. Putin said the new missile, called \"Oreshnik,\" Russian for \"hazel,\" used a nonnuclear warhead. Ukraine's air force said a ballistic missile hit the central Ukrainian city of Dnipro, saying it was launched from the Astrakhan region in southeastern Russia, more than 770 miles away. Ukrainian officials said it and other rockets damaged an industrial facility, a rehabilitation center for people with disabilities and residential buildings. Three people were injured, according to regional authorities. \"This is an obvious and serious increase in the scale and brutality of this war,\" Ukrainian President Volodymyr Zelenskyy wrote on his Telegram messaging app. The attack came during a week of intense fighting in the nearly three years of war since Russia invaded Ukraine, and it followed U.S. authorization earlier this week for Ukraine to use its sophisticated weapons to strike targets deep inside Russia. Putin said Ukraine had carried out attacks in Russia this week using long-range U.S.-made Army Tactical Missile System (ATACMS) and British-French Storm Shadow missiles. He said Ukraine could not have carried out these attacks without NATO involvement. \"Our test use of Oreshnik in real conflict conditions is a response to the aggressive actions by NATO countries towards Russia,\" Putin said. He also warned: \"We believe that we have the right to use our weapons against military facilities of the countries that allow to use their weapons against our facilities.\""
 
-#generate_summaries(input)
-print(generate_statistics(dataset["test"], 100))
+generate_summaries(input)
+#print(generate_statistics(dataset["test"], 100))
